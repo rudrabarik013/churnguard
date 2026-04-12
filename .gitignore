@@ -1,0 +1,21 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+*.egg-info/
+
+# Node
+node_modules/
+dist/
+.cache/
+
+# ML
+*.joblib
+*.pkl
+*.h5
+
+# Misc
+.DS_Store
+*.log
