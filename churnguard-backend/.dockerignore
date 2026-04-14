@@ -1,0 +1,16 @@
+__pycache__
+*.pyc
+*.pyo
+.git
+.env
+venv/
+.venv/
+*.egg-info
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+node_modules/
+*.log
+.DS_Store
+data/Churn_Modelling.csv

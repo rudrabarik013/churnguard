@@ -29,6 +29,7 @@ hyperframe==6.1.0
 idna==3.11
 imbalanced-learn==0.14.1
 joblib==1.5.3
+kaggle==2.0.1
 keras==3.14.0
 libclang==18.1.1
 markdown-it-py==4.0.0

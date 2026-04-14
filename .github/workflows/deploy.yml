@@ -1,0 +1,124 @@
+name: ChurnGuard CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  ECR_URI: ${{ secrets.ECR_URI }}
+  AWS_REGION: ap-south-1
+
+jobs:
+  # ── Stage 1: Lint & Test ─────────────────────────────────────────────────────
+  lint-and-test:
+    name: Lint & Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Python backend
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install backend dependencies
+        working-directory: churnguard-backend
+        run: pip install -r requirements.txt
+
+      - name: Lint Python (flake8)
+        working-directory: churnguard-backend
+        run: |
+          pip install flake8
+          flake8 app/ --max-line-length=120 --exclude=__pycache__ || true
+
+      - name: Run backend tests (pytest)
+        working-directory: churnguard-backend
+        run: |
+          pip install pytest
+          pytest tests/ -v || true   # non-blocking until tests are written
+
+      # Node/TypeScript frontend
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: churnguard-frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: churnguard-frontend
+        run: npm ci
+
+      - name: Lint TypeScript
+        working-directory: churnguard-frontend
+        run: npm run lint || true
+
+      - name: Build frontend (type-check + vite build)
+        working-directory: churnguard-frontend
+        run: npm run build
+
+  # ── Stage 2: Build & Deploy Backend (main branch only) ───────────────────────
+  build-and-deploy:
+    name: Build & Deploy Backend
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Docker image to ECR
+        working-directory: churnguard-backend
+        run: |
+          docker build -t churnguard-api .
+          docker tag churnguard-api:latest ${{ secrets.ECR_URI }}:latest
+          docker push ${{ secrets.ECR_URI }}:latest
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host:     ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key:      ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Login to ECR
+            aws ecr get-login-password --region ${{ env.AWS_REGION }} | \
+              docker login --username AWS --password-stdin ${{ secrets.ECR_URI }}
+
+            # Pull latest image
+            docker pull ${{ secrets.ECR_URI }}:latest
+
+            # Stop and remove old container
+            docker stop churnguard || true
+            docker rm   churnguard || true
+
+            # Start new container
+            docker run -d \
+              --name churnguard \
+              -p 80:8000 \
+              --restart unless-stopped \
+              --env-file /home/ec2-user/.env \
+              -v /home/ec2-user/ml_models:/app/ml_models \
+              ${{ secrets.ECR_URI }}:latest
+
+      - name: Health Check
+        run: |
+          sleep 10
+          curl -f http://${{ secrets.EC2_HOST }}/api/health || exit 1
+          echo "✅ Backend is healthy!"
+
+  # ── Note: Frontend deploys automatically via Vercel on push to main ──────────
+  # No GitHub Actions step needed for frontend — Vercel handles it.
