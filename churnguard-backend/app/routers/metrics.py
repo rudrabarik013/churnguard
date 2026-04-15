@@ -9,8 +9,17 @@ router = APIRouter()
 
 
 def _fetch_customers():
-    resp = supabase.table("customers").select("*").execute()
-    return resp.data or []
+    """Paginate through all customers in batches of 1,000 to bypass Supabase's row limit."""
+    all_rows = []
+    page_size = 1000
+    offset = 0
+    while True:
+        batch = supabase.table("customers").select("*").range(offset, offset + page_size - 1).execute().data or []
+        all_rows.extend(batch)
+        if len(batch) < page_size:
+            break
+        offset += page_size
+    return all_rows
 
 
 # ── GET /kpi ──────────────────────────────────────────────────────────────────

@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Box, Alert, Button, Typography } from '@mui/material';
 import { useBackendStatus } from '../context/BackendStatusContext';
 

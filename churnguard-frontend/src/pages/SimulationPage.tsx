@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box, Grid, Typography, Card, CardActionArea, CardContent, Button,
   CircularProgress, Alert, Chip, Divider, Table, TableBody,
@@ -6,7 +6,7 @@ import {
   Select, FormControl, InputLabel, Switch, FormControlLabel,
 } from '@mui/material';
 import { simulationApi, predictApi } from '../services/api';
-import { ScenarioInfo, SimulationResult, SinglePredictionRequest, PredictionResult } from '../types';
+import type { ScenarioInfo, SimulationResult, SinglePredictionRequest, PredictionResult } from '../types';
 import RoleGuard from '../components/RoleGuard';
 
 const SCENARIO_ICONS: Record<string, string> = {

@@ -85,17 +85,34 @@ def _get_model_and_scaler(request: Request):
 
 
 def _predict_churn_rate(rows, model, scaler) -> float:
-    """Predict churn rate for a list of customer dicts using the ML model."""
-    from app.ml.predictor import _build_feature_row
-    preds = []
+    """
+    Predict churn rate using a single batch call to model.predict_proba.
+    This is ~100x faster than calling predict_proba row-by-row.
+    """
+    import pandas as pd
+    from app.ml.pipeline import FEATURE_COLS, SCALE_COLS
+
+    records = []
     for r in rows:
-        try:
-            X    = _build_feature_row(r, scaler)
-            prob = float(model.predict_proba(X)[0, 1])
-            preds.append(prob >= 0.5)
-        except Exception:
-            preds.append(bool(r.get("exited")))
-    return sum(preds) / len(preds) if preds else 0.0
+        records.append({
+            "credit_score":      float(r.get("credit_score") or 0),
+            "age":               float(r.get("age") or 0),
+            "tenure":            float(r.get("tenure") or 0),
+            "balance":           float(r.get("balance") or 0),
+            "num_of_products":   float(r.get("num_of_products") or 1),
+            "has_cr_card":       float(int(r.get("has_cr_card") or 0)),
+            "is_active_member":  float(int(r.get("is_active_member") or 0)),
+            "estimated_salary":  float(r.get("estimated_salary") or 0),
+            "geography_germany": float(str(r.get("geography") or "").lower() == "germany"),
+            "geography_spain":   float(str(r.get("geography") or "").lower() == "spain"),
+            "gender_male":       float(str(r.get("gender") or "").lower() == "male"),
+        })
+
+    X = pd.DataFrame(records)[FEATURE_COLS]
+    X[SCALE_COLS] = scaler.transform(X[SCALE_COLS])
+
+    probs = model.predict_proba(X.values)[:, 1]
+    return float((probs >= 0.5).mean())
 
 
 def _actual_churn_rate(rows) -> float:
@@ -112,11 +129,28 @@ async def run_simulation(request: Request, body: SimulationRequest, user=Depends
         raise HTTPException(status_code=400, detail=f"Unknown scenario: {scenario_key}. Valid: {list(SCENARIOS.keys())}")
 
     scenario = SCENARIOS[scenario_key]
-    rows     = supabase.table("customers").select("*").execute().data or []
+    try:
+        all_rows = []
+        page_size = 1000
+        offset = 0
+        while True:
+            batch = supabase.table("customers").select("*").range(offset, offset + page_size - 1).execute().data or []
+            all_rows.extend(batch)
+            if len(batch) < page_size:
+                break
+            offset += page_size
+        rows = all_rows
+    except Exception as e:
+        raise HTTPException(
+            status_code=503,
+            detail=f"Unable to reach the database. Please check your Supabase connection. Error: {str(e)}"
+        )
 
     if not rows:
-        # Return plausible hardcoded results when no DB data
-        return _hardcoded_result(scenario_key, scenario["label"])
+        raise HTTPException(
+            status_code=404,
+            detail="No customer data found in the database. Please load the customer dataset into the 'customers' table before running simulations."
+        )
 
     model, scaler = _get_model_and_scaler(request)
 
@@ -192,21 +226,3 @@ async def get_logs(_user=Depends(get_current_user)):
         return []
 
 
-def _hardcoded_result(scenario_key: str, label: str) -> SimulationResponse:
-    lookup = {
-        "activate_inactive_members":  (20.37, 15.82, 4843, 1772812.0),
-        "germany_retention":          (20.37, 16.91, 2509, 1346100.0),
-        "cross_sell_single_product":  (20.37, 17.23, 5084, 1223600.0),
-        "credit_score_improvement":   (20.37, 19.12, 813,  481200.0),
-        "age_targeted_retention":     (20.37, 16.45, 3512, 1493500.0),
-        "zero_balance_engagement":    (20.37, 18.89, 1296, 572300.0),
-        "comprehensive_package":      (20.37, 11.23, 10000, 3501200.0),
-    }
-    cb, ca, aff, rev = lookup.get(scenario_key, (20.37, 18.0, 1000, 500000.0))
-    return SimulationResponse(
-        scenario_name=scenario_key,
-        churn_before=cb,
-        churn_after=ca,
-        customers_affected=aff,
-        revenue_impact=rev,
-    )

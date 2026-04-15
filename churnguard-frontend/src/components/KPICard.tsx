@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Card, CardContent, Typography, Box, Chip } from '@mui/material';
 
 interface Props {

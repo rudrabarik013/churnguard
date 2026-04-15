@@ -24,11 +24,11 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    if (!error.response) {
-      // Network error — backend offline
+    if (!error.response && error.code !== 'ECONNABORTED') {
+      // Network error (not a timeout) — backend offline
       const event = new CustomEvent('backend-offline');
       window.dispatchEvent(event);
-    } else if (error.response.status === 401) {
+    } else if (error.response && error.response.status === 401) {
       // Token expired — redirect to login
       localStorage.removeItem('cg_token');
       localStorage.removeItem('cg_user');
@@ -75,7 +75,7 @@ export const retentionApi = {
 // ── Simulation ────────────────────────────────────────────────────────────────
 export const simulationApi = {
   scenarios: () => api.get('/api/simulation/scenarios'),
-  run:       (scenario_name: string) => api.post('/api/simulation/run', { scenario_name }),
+  run:       (scenario_name: string) => api.post('/api/simulation/run', { scenario_name }, { timeout: 60000 }),
   logs:      () => api.get('/api/simulation/logs'),
 };
 

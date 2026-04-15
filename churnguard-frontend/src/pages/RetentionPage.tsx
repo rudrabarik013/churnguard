@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import {
   Box, Grid, Typography, Card, CardContent, Chip, Button,
   List, ListItem, ListItemIcon, ListItemText, Divider, Skeleton,
@@ -9,7 +9,7 @@ import {
   ResponsiveContainer, CartesianGrid, Label,
 } from 'recharts';
 import { retentionApi } from '../services/api';
-import { RetentionSegment } from '../types';
+import type { RetentionSegment } from '../types';
 
 const PRIORITY_COLORS: Record<string, 'error' | 'warning' | 'info' | 'success'> = {
   Critical: 'error',

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box, Grid, Typography, Table, TableBody, TableCell,
   TableContainer, TableHead, TableRow, Paper, Chip, Tabs, Tab,
@@ -8,7 +8,7 @@ import {
   ResponsiveContainer, Legend, LineChart, Line, CartesianGrid,
 } from 'recharts';
 import { dashboardApi } from '../services/api';
-import {
+import type {
   ChurnDistribution, GeoData, DemographicsData,
   ProductsActivityData, FinancialsData, FeatureImportance, ModelMetrics,
 } from '../types';

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Box, Card, CardContent, Typography, TextField, Button,
   Alert, CircularProgress, Link, Divider,
@@ -6,7 +6,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { authApi } from '../services/api';
-import { AuthUser } from '../types';
+import type { AuthUser } from '../types';
 
 export default function LoginPage() {
   const { login } = useAuth();

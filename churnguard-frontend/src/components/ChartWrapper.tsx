@@ -1,4 +1,4 @@
-import React, { useRef, ReactNode } from 'react';
+import { useRef, ReactNode } from 'react';
 import { Card, CardContent, CardHeader, Box, IconButton, Tooltip, CircularProgress, Typography } from '@mui/material';
 
 interface Props {

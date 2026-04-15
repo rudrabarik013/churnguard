@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box, Grid, Typography, Card, CardContent, CardActionArea,
   Chip, Skeleton, Paper,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { metricsApi } from '../services/api';
-import { KPIData, Insight } from '../types';
+import type { KPIData, Insight } from '../types';
 import { useAuth } from '../context/AuthContext';
 import KPICard from '../components/KPICard';
 
@@ -49,6 +49,10 @@ export default function HomePage() {
           p: { xs: 3, md: 5 },
           mb: 4,
           color: '#fff',
+          textAlign: 'center',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
         }}
       >
         <Typography variant="h4" fontWeight={800} gutterBottom>

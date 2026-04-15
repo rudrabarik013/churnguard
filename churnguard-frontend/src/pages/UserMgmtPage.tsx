@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box, Typography, Table, TableBody, TableCell, TableContainer,
   TableHead, TableRow, Paper, Chip, IconButton, Button,
@@ -7,7 +7,7 @@ import {
   Alert, CircularProgress, Tooltip,
 } from '@mui/material';
 import { usersApi, authApi } from '../services/api';
-import { AppUser } from '../types';
+import type { AppUser } from '../types';
 
 export default function UserMgmtPage() {
   const [users,   setUsers]   = useState<AppUser[]>([]);
