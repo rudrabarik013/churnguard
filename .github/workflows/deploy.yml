@@ -91,11 +91,11 @@ jobs:
         uses: appleboy/ssh-action@v1
         with:
           host:     ${{ secrets.EC2_HOST }}
-          username: ec2-user
+          username: ubuntu
           key:      ${{ secrets.EC2_SSH_KEY }}
           script: |
             # Login to ECR
-            aws ecr get-login-password --region ${{ env.AWS_REGION }} | \
+            aws ecr get-login-password --region ap-south-1 | \
               docker login --username AWS --password-stdin ${{ secrets.ECR_URI }}
 
             # Pull latest image
@@ -108,16 +108,16 @@ jobs:
             # Start new container
             docker run -d \
               --name churnguard \
-              -p 80:8000 \
+              -p 8000:8000 \
               --restart unless-stopped \
-              --env-file /home/ec2-user/.env \
-              -v /home/ec2-user/ml_models:/app/ml_models \
+              --env-file /home/ubuntu/.env \
+              -v /home/ubuntu/ml_models:/app/ml_models \
               ${{ secrets.ECR_URI }}:latest
 
       - name: Health Check
         run: |
-          sleep 10
-          curl -f http://${{ secrets.EC2_HOST }}/api/health || exit 1
+          sleep 15
+          curl -f http://${{ secrets.EC2_HOST }}:8000/api/health || exit 1
           echo "✅ Backend is healthy!"
 
   # ── Note: Frontend deploys automatically via Vercel on push to main ──────────

@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 import {
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip,
-  ResponsiveContainer, Legend, LineChart, Line, CartesianGrid,
+  ResponsiveContainer, Legend, CartesianGrid,
 } from 'recharts';
 import { dashboardApi } from '../services/api';
 import type {

@@ -1,8 +1,7 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box, Grid, Typography, Card, CardContent, Chip, Button,
   List, ListItem, ListItemIcon, ListItemText, Divider, Skeleton,
-  CircularProgress,
 } from '@mui/material';
 import {
   ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip,
