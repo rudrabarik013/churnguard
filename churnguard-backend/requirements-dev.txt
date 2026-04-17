@@ -1,8 +1,15 @@
+# ── ChurnGuard Development Requirements ──────────────────────────────────────
+# Use this file locally for development and model retraining.
+# Install with: pip install -r requirements-dev.txt
+#
+# Includes everything in requirements.txt PLUS dataset/retraining tools.
+# Do NOT use this in the production Docker image.
+
 # ── Web Framework ─────────────────────────────────────────────────────────────
 fastapi==0.135.3
 uvicorn==0.44.0
-python-multipart==0.0.26     # file upload support (batch predict)
-starlette==1.0.0             # fastapi dependency
+python-multipart==0.0.26
+starlette==1.0.0
 
 # ── Data Validation ───────────────────────────────────────────────────────────
 pydantic==2.12.5
@@ -47,3 +54,6 @@ idna==3.11
 urllib3==2.6.3
 requests==2.33.1
 click==8.3.2
+
+# ── Dataset & Retraining Tools (local only) ───────────────────────────────────
+kaggle==2.0.1          # Kaggle API — download Churn_Modelling.csv
