@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import {
-  Box, Grid, Typography, Card, CardActionArea, CardContent, Button,
+  Box, Grid, Typography, Card, CardContent, Button,
   CircularProgress, Alert, Chip, Divider, Table, TableBody,
-  TableCell, TableContainer, TableRow, Paper, TextField, MenuItem,
+  TableCell, TableContainer, TableRow, TextField, MenuItem,
   Select, FormControl, InputLabel, Switch, FormControlLabel,
 } from '@mui/material';
 import { simulationApi, predictApi } from '../services/api';

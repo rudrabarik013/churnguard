@@ -79,10 +79,10 @@ export default function DashboardPage() {
             <ChartWrapper title="Churn Distribution" subtitle="Exited vs Retained" loading={loading}>
               <ResponsiveContainer>
                 <PieChart>
-                  <Pie data={distData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={3} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                  <Pie data={distData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={3} dataKey="value" label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}>
                     {distData.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
                   </Pie>
-                  <Tooltip formatter={(v: number) => v.toLocaleString()} />
+                  <Tooltip formatter={(v) => Number(v).toLocaleString()} />
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
@@ -95,7 +95,7 @@ export default function DashboardPage() {
                 <BarChart data={geo}>
                   <XAxis dataKey="geography" />
                   <YAxis tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} />
-                  <Tooltip formatter={(v: number) => `${(v * 100).toFixed(1)}%`} />
+                  <Tooltip formatter={(v) => `${(Number(v) * 100).toFixed(1)}%`} />
                   <Bar dataKey="churn_rate" name="Churn Rate" fill="#f44336" radius={[4,4,0,0]} />
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 </BarChart>
@@ -114,7 +114,7 @@ export default function DashboardPage() {
                 <BarChart data={demo.gender}>
                   <XAxis dataKey="gender" />
                   <YAxis tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} />
-                  <Tooltip formatter={(v: number) => `${(v * 100).toFixed(1)}%`} />
+                  <Tooltip formatter={(v) => `${(Number(v) * 100).toFixed(1)}%`} />
                   <Bar dataKey="churn_rate" name="Churn Rate" fill="#9c27b0" radius={[4,4,0,0]} />
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 </BarChart>
@@ -127,7 +127,7 @@ export default function DashboardPage() {
                 <BarChart data={demo.age_groups}>
                   <XAxis dataKey="age_group" />
                   <YAxis tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} />
-                  <Tooltip formatter={(v: number) => `${(v * 100).toFixed(1)}%`} />
+                  <Tooltip formatter={(v) => `${(Number(v) * 100).toFixed(1)}%`} />
                   <Bar dataKey="churn_rate" name="Churn Rate" fill="#ff9800" radius={[4,4,0,0]} />
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 </BarChart>
@@ -146,7 +146,7 @@ export default function DashboardPage() {
                 <BarChart data={prod.products}>
                   <XAxis dataKey="num_of_products" />
                   <YAxis tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} />
-                  <Tooltip formatter={(v: number) => `${(v * 100).toFixed(1)}%`} />
+                  <Tooltip formatter={(v) => `${(Number(v) * 100).toFixed(1)}%`} />
                   <Bar dataKey="churn_rate" name="Churn Rate" fill="#1976d2" radius={[4,4,0,0]} />
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 </BarChart>
@@ -159,7 +159,7 @@ export default function DashboardPage() {
                 <BarChart data={prod.activity}>
                   <XAxis dataKey="member_status" />
                   <YAxis tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} />
-                  <Tooltip formatter={(v: number) => `${(v * 100).toFixed(1)}%`} />
+                  <Tooltip formatter={(v) => `${(Number(v) * 100).toFixed(1)}%`} />
                   <Bar dataKey="churn_rate" name="Churn Rate" fill="#f44336" radius={[4,4,0,0]} />
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 </BarChart>
@@ -172,7 +172,7 @@ export default function DashboardPage() {
                 <BarChart data={prod.credit_card}>
                   <XAxis dataKey="card_status" />
                   <YAxis tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} />
-                  <Tooltip formatter={(v: number) => `${(v * 100).toFixed(1)}%`} />
+                  <Tooltip formatter={(v) => `${(Number(v) * 100).toFixed(1)}%`} />
                   <Bar dataKey="churn_rate" name="Churn Rate" fill="#4caf50" radius={[4,4,0,0]} />
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 </BarChart>
@@ -191,7 +191,7 @@ export default function DashboardPage() {
                 <BarChart data={fin.balance_buckets}>
                   <XAxis dataKey="bucket" tick={{ fontSize: 11 }} />
                   <YAxis tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} />
-                  <Tooltip formatter={(v: number) => `${(v * 100).toFixed(1)}%`} />
+                  <Tooltip formatter={(v) => `${(Number(v) * 100).toFixed(1)}%`} />
                   <Bar dataKey="churn_rate" name="Churn Rate" fill="#1976d2" radius={[4,4,0,0]} />
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 </BarChart>
@@ -204,7 +204,7 @@ export default function DashboardPage() {
                 <BarChart data={fin.credit_score_buckets}>
                   <XAxis dataKey="bucket" tick={{ fontSize: 11 }} />
                   <YAxis tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} />
-                  <Tooltip formatter={(v: number) => `${(v * 100).toFixed(1)}%`} />
+                  <Tooltip formatter={(v) => `${(Number(v) * 100).toFixed(1)}%`} />
                   <Bar dataKey="churn_rate" name="Churn Rate" fill="#ff9800" radius={[4,4,0,0]} />
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 </BarChart>
@@ -217,7 +217,7 @@ export default function DashboardPage() {
                 <BarChart data={fin.salary_buckets}>
                   <XAxis dataKey="bucket" tick={{ fontSize: 11 }} />
                   <YAxis tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} />
-                  <Tooltip formatter={(v: number) => `${(v * 100).toFixed(1)}%`} />
+                  <Tooltip formatter={(v) => `${(Number(v) * 100).toFixed(1)}%`} />
                   <Bar dataKey="churn_rate" name="Churn Rate" fill="#4caf50" radius={[4,4,0,0]} />
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                 </BarChart>
@@ -236,7 +236,7 @@ export default function DashboardPage() {
                 <BarChart data={fi} layout="vertical" margin={{ left: 120 }}>
                   <XAxis type="number" tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} />
                   <YAxis type="category" dataKey="feature" width={120} tick={{ fontSize: 12 }} />
-                  <Tooltip formatter={(v: number) => `${(v * 100).toFixed(1)}%`} />
+                  <Tooltip formatter={(v) => `${(Number(v) * 100).toFixed(1)}%`} />
                   <Bar dataKey="importance" name="Importance" fill="#1976d2" radius={[0,4,4,0]} />
                   <CartesianGrid strokeDasharray="3 3" horizontal={false} />
                 </BarChart>
@@ -307,7 +307,7 @@ export default function DashboardPage() {
                     <BarChart data={models} margin={{ top: 10 }}>
                       <XAxis dataKey="model" tick={{ fontSize: 11 }} />
                       <YAxis domain={[0.5, 1]} tickFormatter={(v) => `${(v * 100).toFixed(0)}%`} />
-                      <Tooltip formatter={(v: number) => `${(v * 100).toFixed(1)}%`} />
+                      <Tooltip formatter={(v) => `${(Number(v) * 100).toFixed(1)}%`} />
                       <Legend />
                       <Bar dataKey="recall"    name="Recall"    fill="#f44336" radius={[4,4,0,0]} />
                       <Bar dataKey="precision" name="Precision" fill="#1976d2" radius={[4,4,0,0]} />
